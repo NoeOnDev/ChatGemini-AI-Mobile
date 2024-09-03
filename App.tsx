@@ -23,50 +23,67 @@ interface Message {
   answer: string;
 }
 
-function App() {
+const useChatLogic = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const flatListRef = useRef<FlatList>(null);
 
   const sendMessageToAI = async (query: string, context: Message[]) => {
-
-    const contextMessages = context.map((msg) => `Q: ${msg.question}\n${msg.answer}`).join('\n');
+    const contextMessages = context
+      .map((msg) => `Q: ${msg.question}\n${msg.answer}`)
+      .join('\n');
     const fullQuery = `${contextMessages}\nQ: ${query}`;
 
     const result = await chat.sendMessage(fullQuery);
     return result.response?.text();
   };
 
-  const handleSend = useCallback(async () => {
-    if (!query.trim()) {
-      Alert.alert('Error', 'The query cannot be empty.');
-      return;
-    }
-
-    const newQuestion: Message = { question: query, answer: '' };
-    setMessages((prevMessages) => [...prevMessages, newQuestion]);
-    setQuery('');
-    setIsLoading(true);
-
-    try {
-      const text = await sendMessageToAI(query, messages);
-      if (text) {
-        setMessages((prevMessages) =>
-          prevMessages.map((msg, index) =>
-            index === prevMessages.length - 1
-              ? { ...msg, answer: text }
-              : msg
-          )
-        );
-        flatListRef.current?.scrollToEnd({ animated: true });
+  const handleSend = useCallback(
+    async (query: string) => {
+      if (!query.trim()) {
+        Alert.alert('Error', 'The query cannot be empty.');
+        return;
       }
-    } catch (err) {
-      Alert.alert('Error', (err as Error).message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [query, messages]);
+
+      const newQuestion: Message = { question: query, answer: '' };
+      setMessages((prevMessages) => [...prevMessages, newQuestion]);
+      setIsLoading(true);
+
+      try {
+        const text = await sendMessageToAI(query, messages);
+        if (text) {
+          setMessages((prevMessages) =>
+            prevMessages.map((msg, index) =>
+              index === prevMessages.length - 1
+                ? { ...msg, answer: text }
+                : msg
+            )
+          );
+        }
+      } catch (err) {
+        Alert.alert('Error', (err as Error).message);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [messages]
+  );
+
+  return {
+    messages,
+    isLoading,
+    handleSend,
+  };
+};
+
+function App() {
+  const [query, setQuery] = useState('');
+  const flatListRef = useRef<FlatList>(null);
+  const { messages, isLoading, handleSend } = useChatLogic();
+
+  const onSendPress = () => {
+    handleSend(query);
+    setQuery('');
+  };
 
   return (
     <View style={styles.container}>
@@ -86,13 +103,15 @@ function App() {
                     text: styles.botText,
                   }}
                 >
-                  {item.answer}</Markdown>
+                  {item.answer}
+                </Markdown>
               </View>
             ) : null}
           </View>
         )}
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.chatContent}
+        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
       />
       <View style={styles.inputContainer}>
         <TextInput
@@ -103,7 +122,7 @@ function App() {
           placeholderTextColor="#999"
           multiline
         />
-        <TouchableOpacity activeOpacity={0.7} onPress={handleSend} disabled={isLoading}>
+        <TouchableOpacity activeOpacity={0.7} onPress={onSendPress} disabled={isLoading}>
           {isLoading ? (
             <ActivityIndicator size="small" color="#007AFF" />
           ) : (
