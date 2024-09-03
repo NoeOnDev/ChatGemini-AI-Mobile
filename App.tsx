@@ -11,7 +11,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import Markdown from 'react-native-markdown-display';
-import { styles } from './ChatStyles';
+import { styles } from './AppStyles';
 import { API_KEY } from '@env';
 
 const genAI = new GoogleGenerativeAI(API_KEY);
