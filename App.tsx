@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, memo } from 'react';
 import {
   View,
   Text,
@@ -33,8 +33,12 @@ const useChatLogic = () => {
       .join('\n');
     const fullQuery = `${contextMessages}\nQ: ${query}`;
 
-    const result = await chat.sendMessage(fullQuery);
-    return result.response?.text();
+    try {
+      const result = await chat.sendMessage(fullQuery);
+      return result.response?.text();
+    } catch (error) {
+      throw new Error('Error communicating with AI API');
+    }
   };
 
   const handleSend = useCallback(
@@ -75,6 +79,46 @@ const useChatLogic = () => {
   };
 };
 
+const MessageItem = memo(({ item }: { item: Message }) => (
+  <View>
+    <View style={[styles.messageContainer, styles.userMessage]}>
+      <Text style={styles.userText}>{item.question}</Text>
+    </View>
+    {item.answer ? (
+      <View style={[styles.messageContainer, styles.botMessage]}>
+        <Markdown
+          style={{
+            body: styles.botText,
+            text: styles.botText,
+          }}
+        >
+          {item.answer}
+        </Markdown>
+      </View>
+    ) : null}
+  </View>
+));
+
+const InputArea = ({ query, setQuery, onSendPress, isLoading }: any) => (
+  <View style={styles.inputContainer}>
+    <TextInput
+      style={styles.textInput}
+      value={query}
+      onChangeText={setQuery}
+      placeholder="Type a message..."
+      placeholderTextColor="#999"
+      multiline
+    />
+    <TouchableOpacity activeOpacity={0.7} onPress={onSendPress} disabled={isLoading}>
+      {isLoading ? (
+        <ActivityIndicator size="small" color="#007AFF" />
+      ) : (
+        <Icon name="send" size={28} color="#007AFF" />
+      )}
+    </TouchableOpacity>
+  </View>
+);
+
 function App() {
   const [query, setQuery] = useState('');
   const flatListRef = useRef<FlatList>(null);
@@ -90,46 +134,12 @@ function App() {
       <FlatList
         ref={flatListRef}
         data={messages}
-        renderItem={({ item }) => (
-          <View>
-            <View style={[styles.messageContainer, styles.userMessage]}>
-              <Text style={styles.userText}>{item.question}</Text>
-            </View>
-            {item.answer ? (
-              <View style={[styles.messageContainer, styles.botMessage]}>
-                <Markdown
-                  style={{
-                    body: styles.botText,
-                    text: styles.botText,
-                  }}
-                >
-                  {item.answer}
-                </Markdown>
-              </View>
-            ) : null}
-          </View>
-        )}
+        renderItem={({ item }) => <MessageItem item={item} />}
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.chatContent}
         onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
       />
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.textInput}
-          value={query}
-          onChangeText={setQuery}
-          placeholder="Type your question here..."
-          placeholderTextColor="#999"
-          multiline
-        />
-        <TouchableOpacity activeOpacity={0.7} onPress={onSendPress} disabled={isLoading}>
-          {isLoading ? (
-            <ActivityIndicator size="small" color="#007AFF" />
-          ) : (
-            <Icon name="send" size={28} color="#007AFF" />
-          )}
-        </TouchableOpacity>
-      </View>
+      <InputArea query={query} setQuery={setQuery} onSendPress={onSendPress} isLoading={isLoading} />
     </View>
   );
 }
