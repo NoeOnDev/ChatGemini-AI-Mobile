@@ -10,9 +10,10 @@ export const styles = StyleSheet.create({
     },
     messageContainer: {
         marginBottom: 10,
-        maxWidth: '80%',
+        maxWidth: '85%',
         padding: 10,
         borderRadius: 15,
+        flexDirection: 'row',
     },
     userMessage: {
         backgroundColor: '#DCF8C6',
@@ -31,6 +32,7 @@ export const styles = StyleSheet.create({
     botText: {
         fontSize: 15,
         color: '#555',
+        paddingBottom: 5,
     },
     inputContainer: {
         flexDirection: 'row',
