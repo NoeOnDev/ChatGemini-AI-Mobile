@@ -139,6 +139,9 @@ function App() {
     >
       <StatusBar backgroundColor={'#007AFF'} />
       <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Gemini AI Chat</Text>
+        </View>
         <FlatList
           ref={flatListRef}
           data={messages}

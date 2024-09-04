@@ -48,7 +48,17 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 10,
         marginRight: 10,
         color: '#333',
-
         backgroundColor: '#fff',
+    },
+    header: {
+        backgroundColor: 'transparent',
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    headerText: {
+        color: '#000',
+        fontSize: 20,
+        fontWeight: 'bold',
     },
 });
