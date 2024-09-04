@@ -7,6 +7,9 @@ import {
   FlatList,
   Alert,
   ActivityIndicator,
+  SafeAreaView,
+  StatusBar,
+  ImageBackground,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -130,17 +133,29 @@ function App() {
   };
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        renderItem={({ item }) => <MessageItem item={item} />}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={styles.chatContent}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-      />
-      <InputArea query={query} setQuery={setQuery} onSendPress={onSendPress} isLoading={isLoading} />
-    </View>
+    <ImageBackground
+      source={require('./background.jpg')}
+      style={styles.container}
+    >
+      <StatusBar backgroundColor={'#007AFF'} />
+      <SafeAreaView style={styles.container}>
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={({ item }) => <MessageItem item={item} />}
+          contentContainerStyle={styles.chatContent}
+          onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
+          onLayout={() => flatListRef.current?.scrollToEnd()}
+        />
+        <InputArea
+          query={query}
+          setQuery={setQuery}
+          onSendPress={onSendPress}
+          isLoading={isLoading}
+        />
+      </SafeAreaView>
+    </ImageBackground>
   );
 }
 

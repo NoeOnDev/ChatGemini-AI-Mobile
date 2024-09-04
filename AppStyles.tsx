@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
     },
     chatContent: {
         padding: 10,
@@ -16,7 +15,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     userMessage: {
-        backgroundColor: '#DCF8C6',
+        backgroundColor: '#007AFF',
         alignSelf: 'flex-end',
         borderBottomRightRadius: 0,
     },
@@ -27,19 +26,17 @@ export const styles = StyleSheet.create({
     },
     userText: {
         fontSize: 15,
-        color: '#000',
+        color: '#fff',
     },
     botText: {
         fontSize: 15,
-        color: '#555',
+        color: '#000',
         paddingBottom: 5,
     },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
-        borderTopWidth: 1,
-        borderColor: '#ddd',
     },
     textInput: {
         flex: 1,
@@ -51,5 +48,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 10,
         marginRight: 10,
         color: '#333',
+
+        backgroundColor: '#fff',
     },
 });
