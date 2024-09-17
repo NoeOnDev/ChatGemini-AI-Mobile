@@ -31,8 +31,9 @@ const useChatLogic = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const sendMessageToAI = async (query: string, context: Message[]) => {
-    const contextMessages = context
-      .map((msg) => `Q: ${msg.question}\n${msg.answer}`)
+    const limitedContext = context.slice(-5);
+    const contextMessages = limitedContext
+      .map((msg) => `Q: ${msg.question}\nA: ${msg.answer}`)
       .join('\n');
     const fullQuery = `${contextMessages}\nQ: ${query}`;
 
